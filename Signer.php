@@ -1,6 +1,6 @@
 <?php
 
-namespace baibaratsky\WebMoney\Signer;
+namespace baibaratsky\WebMoney;
 
 class Signer
 {
@@ -10,20 +10,20 @@ class Signer
     /**
      * Create RequestSigner object
      *
-     * @param string $wmid          WMID
+     * @param string $wmid          Signer WMID
      * @param string $keyFileName   Full path to the key file
      * @param string $keyPassword   Key file password
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function __construct($wmid, $keyFileName, $keyPassword)
     {
         if (empty($wmid)) {
-            throw new Exception('WMID not provided.');
+            throw new \Exception('WMID not provided.');
         }
 
         if (!file_exists($keyFileName)) {
-            throw new Exception('Key file not found: ' . $keyFileName);
+            throw new \Exception('Key file not found: ' . $keyFileName);
         }
         $key = file_get_contents($keyFileName);
 
@@ -31,7 +31,7 @@ class Signer
         $keyData['buffer'] = $this->encryptKey($keyData['buffer'], $wmid, $keyPassword);
 
         if (!$this->verifyHash($keyData)) {
-            throw new Exception('Hash check failed. Key file seems corrupted.');
+            throw new \Exception('Hash check failed. Key file seems corrupted.');
         }
 
         $this->initSignVariables($keyData['buffer']);
@@ -136,7 +136,7 @@ class Signer
     }
 
     /**
-     * Initialize power and modulus to use for signing
+     * Initialize power and modulus
      *
      * @param string $keyBuffer
      */
