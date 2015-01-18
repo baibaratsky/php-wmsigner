@@ -1,0 +1,23 @@
+{
+    "name": "baibaratsky/wmsigner",
+    "description": "WebMoney Request Signer",
+    "keywords": ["webmoney", "signer", "wmsigner"],
+    "minimum-stability": "stable",
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Andrei Baibaratsky",
+            "email": "andrei@baibaratsky.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3",
+        "ext-bcmath": "*",
+        "ext-gmp": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "baibaratsky\\WebMoney\\Signer\\": ""
+        }
+    }
+}
