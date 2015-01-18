@@ -1,9 +1,10 @@
 {
-    "name": "baibaratsky/wmsigner",
+    "name": "baibaratsky/php-wmsigner",
     "description": "WebMoney Request Signer",
     "keywords": ["webmoney", "signer", "wmsigner"],
     "minimum-stability": "stable",
     "license": "BSD-3-Clause",
+    "homepage": "http://github.com/baibaratsky/php-wmsigner",
     "authors": [
         {
             "name": "Andrei Baibaratsky",
