@@ -27,11 +27,15 @@ class Signer
         }
         $key = file_get_contents($keyFileName);
 
+        if ($key === false) {
+            throw new \Exception('Error reading from the key file.');
+        }
+
         $keyData = unpack('vreserved/vsignFlag/a16hash/Vlength/a*buffer', $key);
         $keyData['buffer'] = $this->encryptKey($keyData['buffer'], $wmid, $keyPassword);
 
         if (!$this->verifyHash($keyData)) {
-            throw new \Exception('Hash check failed. Key file seems corrupted.');
+            throw new \Exception('Hash check failed. Key file seems to be corrupted.');
         }
 
         $this->initSignVariables($keyData['buffer']);
