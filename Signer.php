@@ -25,8 +25,8 @@ class Signer
         if (!file_exists($keyFileName)) {
             throw new \Exception('Key file not found: ' . $keyFileName);
         }
-        $key = file_get_contents($keyFileName);
 
+        $key = file_get_contents($keyFileName);
         if ($key === false) {
             throw new \Exception('Error reading from the key file.');
         }
