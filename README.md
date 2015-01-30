@@ -30,7 +30,7 @@ require_once(__DIR__ . '/vendor/autoload.php'); // Require autoload file generat
 
 use baibaratsky\WebMoney\Signer;
 
-$signer = new Signer('wmid', 'key', 'password');
+$signer = new Signer('wmid', '/full/path/to/the/key.kwm', 'password');
 $data = 'Data to be signed'; 
 $signature = $signer->sign($data);
 ```
