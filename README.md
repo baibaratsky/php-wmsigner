@@ -1,11 +1,13 @@
 WebMoney Signer
 ===============
-Provides a convenient way to sign your requests to WebMoney API in PHP with no need to run executables. You may also use [WebMoney API PHP Library](https://github.com/baibaratsky/php-webmoney) for more transparent object-oriented code.
+Provides a convenient way to sign your requests to WebMoney API in PHP with no need to run executables.
+You may also use [WebMoney API PHP Library](https://github.com/baibaratsky/php-webmoney) for more transparent object-oriented code.
 
 
 Requirements
 ------------
-WebMoney Signer requires PHP 5.3 compiled with [BCMath](http://www.php.net/manual/en/book.bc.php) and [GMP](http://www.php.net/manual/en/book.gmp.php) support.
+WebMoney Signer requires PHP 5.3 compiled with [BCMath](http://www.php.net/manual/en/book.bc.php) support.
+[GMP](http://www.php.net/manual/en/book.gmp.php) can increase the performance, but is not required.
 
 
 Installation
@@ -19,7 +21,7 @@ Installation
 0. Add the php-wmsigner dependency:
 
     ```
-    php composer.phar require baibaratsky/php-wmsigner:1.0.*
+    php composer.phar require baibaratsky/php-wmsigner:1.1.*
     ```
 
 Usage

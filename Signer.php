@@ -32,9 +32,9 @@ class Signer
         }
 
         $keyData = unpack('vreserved/vsignFlag/a16hash/Vlength/a*buffer', $key);
-        $keyData['buffer'] = $this->encryptKey($keyData['buffer'], $wmid, $keyPassword);
+        $keyData['buffer'] = self::encryptKey($keyData['buffer'], $wmid, $keyPassword);
 
-        if (!$this->verifyHash($keyData)) {
+        if (!self::verifyHash($keyData)) {
             throw new \Exception('Hash check failed. Key file seems to be corrupted.');
         }
 
@@ -62,10 +62,10 @@ class Signer
         $base = pack('v', strlen($base)) . $base;
 
         // Modular exponentiation
-        $dec = bcpowmod($this->reverseToDecimal($base), $this->power, $this->modulus);
+        $dec = bcpowmod(self::reverseToDecimal($base), $this->power, $this->modulus);
 
         // Convert result to hexadecimal
-        $hex = gmp_strval($dec, 16);
+        $hex = self::dec2hex($dec);
 
         // Fill empty bytes with zeros
         $hex = str_repeat('0', 132 - strlen($hex)) . $hex;
@@ -80,6 +80,21 @@ class Signer
     }
 
     /**
+     * Initialize power and modulus
+     *
+     * @param string $keyBuffer
+     */
+    private function initSignVariables($keyBuffer)
+    {
+        $data = unpack('Vreserved/vpowerLength', $keyBuffer);
+        $data = unpack('Vreserved/vpowerLength/a' . $data['powerLength'] . 'power/vmodulusLength', $keyBuffer);
+        $data = unpack('Vreserved/vpowerLength/a' . $data['powerLength'] . 'power/vmodulusLength/a'
+                    . $data['modulusLength'] . 'modulus', $keyBuffer);
+        $this->power = self::reverseToDecimal($data['power']);
+        $this->modulus = self::reverseToDecimal($data['modulus']);
+    }
+
+    /**
      * Encrypt key using hash of WMID and key password
      *
      * @param string $keyBuffer
@@ -88,11 +103,11 @@ class Signer
      *
      * @return string
      */
-    private function encryptKey($keyBuffer, $wmid, $keyPassword)
+    private static function encryptKey($keyBuffer, $wmid, $keyPassword)
     {
         $hash = hash('md4', $wmid . $keyPassword, true);
 
-        return $this->xorStrings($keyBuffer, $hash, 6);
+        return self::xorStrings($keyBuffer, $hash, 6);
     }
 
     /**
@@ -104,7 +119,7 @@ class Signer
      *
      * @return string
      */
-    private function xorStrings($subject, $modifier, $shift = 0)
+    private static function xorStrings($subject, $modifier, $shift = 0)
     {
         $modifierLength = strlen($modifier);
         $i = $shift;
@@ -127,7 +142,7 @@ class Signer
      *
      * @return bool
      */
-    private function verifyHash($keyData)
+    private static function verifyHash($keyData)
     {
         $verificationString = pack('v', $keyData['reserved'])
             . pack('v', 0)
@@ -140,29 +155,85 @@ class Signer
     }
 
     /**
-     * Initialize power and modulus
-     *
-     * @param string $keyBuffer
-     */
-    private function initSignVariables($keyBuffer)
-    {
-        $data = unpack('Vreserved/vpowerLength', $keyBuffer);
-        $data = unpack('Vreserved/vpowerLength/a' . $data['powerLength'] . 'power/vmodulusLength', $keyBuffer);
-        $data = unpack('Vreserved/vpowerLength/a' . $data['powerLength'] . 'power/vmodulusLength/a'
-                    . $data['modulusLength'] . 'modulus', $keyBuffer);
-        $this->power = $this->reverseToDecimal($data['power']);
-        $this->modulus = $this->reverseToDecimal($data['modulus']);
-    }
-
-    /**
      * Reverse byte order and convert binary data to decimal string
      *
      * @param string $binaryData
      *
      * @return string
      */
-    private function reverseToDecimal($binaryData)
+    private static function reverseToDecimal($binaryData)
     {
-        return gmp_strval('0x' . bin2hex(strrev($binaryData)));
+        return self::hex2dec(bin2hex(strrev($binaryData)));
+    }
+
+    /**
+     * Convert hexadecimal string to decimal string
+     *
+     * @param $hex
+     *
+     * @return string
+     */
+    private static function hex2dec($hex)
+    {
+        if (extension_loaded('gmp')) {
+            return gmp_strval('0x' . $hex);
+        }
+
+        return self::hex2decBC($hex);
+    }
+
+    /**
+     * Convert hexadecimal string to decimal string using BCMath
+     *
+     * @param $hex
+     *
+     * @return string
+     */
+    private static function hex2decBC($hex) {
+        if (strlen($hex) == 1) {
+            return (string)hexdec($hex);
+        }
+
+        $last = substr($hex, -1);
+        $rest = substr($hex, 0, -1);
+
+        return bcadd(
+                (string)hexdec($last),
+                bcmul('16', self::hex2decBC($rest))
+        );
+    }
+
+    /**
+     * Convert decimal string to hexadecimal string
+     *
+     * @param string $dec
+     *
+     * @return string
+     */
+    private static function dec2hex($dec)
+    {
+        if (extension_loaded('gmp')) {
+            return gmp_strval($dec, 16);
+        }
+
+        return self::dec2hexBC($dec);
+    }
+
+    /**
+     * Convert decimal string to hexadecimal string using BCMath
+     *
+     * @param string $dec
+     *
+     * @return string
+     */
+    private static function dec2hexBC($dec) {
+        $remainder = bcmod($dec, '16');
+        $quotient = bcdiv(bcsub($dec, $remainder), '16');
+
+        if ($quotient == 0) {
+            return dechex($remainder);
+        }
+
+        return self::dec2hexBC($quotient) . dechex($remainder);
     }
 }
