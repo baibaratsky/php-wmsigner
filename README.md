@@ -1,5 +1,10 @@
 WebMoney Signer
 ===============
+[![Packagist](https://img.shields.io/packagist/l/baibaratsky/php-wmsigner.svg)](https://github.com/baibaratsky/php-wmsigner/blob/master/LICENSE.md)
+[![Dependency Status](https://www.versioneye.com/user/projects/55316b5e10e7149066000c9a/badge.svg?style=flat)](https://www.versioneye.com/user/projects/55316b5e10e7149066000c9a)
+[![Packagist](https://img.shields.io/packagist/v/baibaratsky/php-wmsigner.svg)](https://packagist.org/packages/baibaratsky/php-wmsigner)
+[![Packagist](https://img.shields.io/packagist/dt/baibaratsky/php-wmsigner.svg)](https://packagist.org/packages/baibaratsky/php-wmsigner)
+
 Provides a convenient way to sign your requests to WebMoney API in PHP with no need to run executables.
 You may also use [WebMoney API PHP Library](https://github.com/baibaratsky/php-webmoney) for more transparent object-oriented code.
 
