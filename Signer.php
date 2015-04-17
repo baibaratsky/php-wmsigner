@@ -62,7 +62,7 @@ class Signer
         $base = pack('v', strlen($base)) . $base;
 
         // Modular exponentiation
-        $dec = bcpowmod(self::reverseToDecimal($base), $this->power, $this->modulus);
+        $dec = bcpowmod(self::reverseToDecimal($base), $this->power, $this->modulus, 0);
 
         // Convert result to hexadecimal
         $hex = self::dec2hex($dec);
