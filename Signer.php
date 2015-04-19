@@ -64,7 +64,7 @@ class Signer
         // Modular exponentiation
         $dec = bcpowmod(self::reverseToDecimal($base), $this->power, $this->modulus, 0);
 
-        // Convert result to hexadecimal
+        // Convert to hexadecimal
         $hex = self::dec2hex($dec);
 
         // Fill empty bytes with zeros
@@ -199,7 +199,8 @@ class Signer
 
         return bcadd(
                 (string)hexdec($last),
-                bcmul('16', self::hex2decBC($rest))
+                bcmul('16', self::hex2decBC($rest), 0),
+                0
         );
     }
 
@@ -228,7 +229,7 @@ class Signer
      */
     private static function dec2hexBC($dec) {
         $remainder = bcmod($dec, '16');
-        $quotient = bcdiv(bcsub($dec, $remainder), '16');
+        $quotient = bcdiv(bcsub($dec, $remainder, 0), '16', 0);
 
         if ($quotient == 0) {
             return dechex($remainder);
