@@ -1,6 +1,6 @@
 {
     "name": "baibaratsky/php-wmsigner",
-    "description": "WebMoney Signer",
+    "description": "WebMoney Signer: a native PHP implementation of the WMSigner module",
     "keywords": ["webmoney", "signer", "wmsigner", "WMXI"],
     "license": "BSD-3-Clause",
     "homepage": "http://github.com/baibaratsky/php-wmsigner",
