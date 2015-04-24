@@ -2,14 +2,16 @@
 
 namespace baibaratsky\WebMoney;
 
+/**
+ * WebMoney Signer: a native PHP implementation of the WMSigner module
+ * @package baibaratsky\WebMoney
+ */
 class Signer
 {
     private $power;
     private $modulus;
 
     /**
-     * Create RequestSigner object
-     *
      * @param string $wmid          Signer WMID
      * @param string $keyFileName   Full path to the key file
      * @param string $keyPassword   Key file password
@@ -42,7 +44,7 @@ class Signer
     }
 
     /**
-     * Create signature for given data
+     * Create a signature for the given data
      *
      * @param string $data
      *
@@ -58,7 +60,7 @@ class Signer
             $base .= pack('V', mt_rand());
         }
 
-        // Add length of the base as first 2 bytes
+        // Add the length of the base (56 = 16 + 40) as the first 2 bytes
         $base = pack('v', strlen($base)) . $base;
 
         // Modular exponentiation
@@ -80,7 +82,7 @@ class Signer
     }
 
     /**
-     * Initialize power and modulus
+     * Initialize the power and the modulus
      *
      * @param string $keyBuffer
      */
@@ -95,7 +97,7 @@ class Signer
     }
 
     /**
-     * Encrypt key using hash of WMID and key password
+     * Encrypt the key using the hash of the WMID and the key password
      *
      * @param string $keyBuffer
      * @param string $wmid
@@ -111,7 +113,7 @@ class Signer
     }
 
     /**
-     * XOR subject with modifier
+     * XOR operation on two strings
      *
      * @param string $subject
      * @param string $modifier
@@ -136,9 +138,9 @@ class Signer
     }
 
     /**
-     * Verify hash of the key
+     * Verify the hash of the key
      *
-     * @param $keyData
+     * @param array $keyData
      *
      * @return bool
      */
@@ -167,9 +169,9 @@ class Signer
     }
 
     /**
-     * Convert hexadecimal string to decimal string
+     * Convert a hexadecimal string to a decimal one
      *
-     * @param $hex
+     * @param string $hex
      *
      * @return string
      */
@@ -183,29 +185,31 @@ class Signer
     }
 
     /**
-     * Convert hexadecimal string to decimal string using BCMath
+     * Convert a hexadecimal string to a decimal one using BCMath
      *
-     * @param $hex
+     * @param string $hex
      *
      * @return string
      */
     private static function hex2decBC($hex) {
-        if (strlen($hex) == 1) {
-            return (string)hexdec($hex);
-        }
-
-        $last = substr($hex, -1);
-        $rest = substr($hex, 0, -1);
-
-        return bcadd(
-                (string)hexdec($last),
-                bcmul('16', self::hex2decBC($rest), 0),
+        $dec = '0';
+        $len = strlen($hex);
+        for ($i = 1; $i <= $len; $i++) {
+            $dec = bcadd(
+                $dec,
+                bcmul(
+                    strval(hexdec($hex[$i - 1])),
+                    bcpow('16', strval($len - $i), 0),
+                    0
+                ),
                 0
-        );
+            );
+        }
+        return $dec;
     }
 
     /**
-     * Convert decimal string to hexadecimal string
+     * Convert a decimal string to a hexadecimal one
      *
      * @param string $dec
      *
@@ -221,20 +225,21 @@ class Signer
     }
 
     /**
-     * Convert decimal string to hexadecimal string using BCMath
+     * Convert a decimal string to a hexadecimal one using BCMath
      *
      * @param string $dec
      *
      * @return string
      */
     private static function dec2hexBC($dec) {
-        $remainder = bcmod($dec, '16');
-        $quotient = bcdiv(bcsub($dec, $remainder, 0), '16', 0);
+        $hex = '';
 
-        if ($quotient == 0) {
-            return dechex($remainder);
+        while ($dec) {
+            $modulus = bcmod($dec, '16');
+            $hex = dechex($modulus) . $hex;
+            $dec = bcdiv(bcsub($dec, $modulus, 0), '16', 0);
         }
 
-        return self::dec2hexBC($quotient) . dechex($remainder);
+        return $hex;
     }
 }

@@ -1,5 +1,5 @@
-Webmoney API PHP library is free software. It is released under
-the terms of the following BSD License.
+WebMoney Signer is free software. It is released under the terms
+of the following BSD License.
 
 Copyright © 2013-2015 by Andrei Baibaratsky. All rights reserved.
 
