@@ -32,12 +32,10 @@ class Signer
         if ($key === false) {
             throw new \Exception('Error reading from the key file.');
         }
-
-        $keyData = unpack('vreserved/vsignFlag/a16hash/Vlength/a*buffer', $key);
-        $keyData['buffer'] = self::encryptKey($keyData['buffer'], $wmid, $keyPassword);
-
-        if (!self::verifyHash($keyData)) {
-            throw new \Exception('Hash check failed. Key file seems to be corrupted.');
+        try {
+            $keyData = self::tryReadEncrypted($key,$wmid,$keyPassword);
+        } catch(\Exception $e) {
+            $keyData = self::tryReadEncrypted($key,$wmid,substr($keyPassword,0,strlen($keyPassword)/2));
         }
 
         $this->initSignVariables($keyData['buffer']);
@@ -94,6 +92,23 @@ class Signer
                     . $data['modulusLength'] . 'modulus', $keyBuffer);
         $this->power = self::reverseToDecimal($data['power']);
         $this->modulus = self::reverseToDecimal($data['modulus']);
+    }
+    /**
+     * Unpack keydata , encrypt key body and check hashSum
+     *
+     * @param string $key
+     * @param stirng $wmid
+     * @param string $keyPassword
+     *
+     */
+    private function tryReadEncrypted($key,$wmid,$keyPassword)
+    {   echo $keyPassword;
+        $keyData = unpack('vreserved/vsignFlag/a16hash/Vlength/a*buffer', $key);
+        $keyData['buffer'] = self::encryptKey($keyData['buffer'], $wmid, $keyPassword);
+        if (!self::verifyHash($keyData)) {
+            throw new \Exception('Hash check failed. Key file seems to be corrupted.');
+        }
+        return $keyData;
     }
 
     /**
@@ -243,3 +258,4 @@ class Signer
         return $hex;
     }
 }
+
