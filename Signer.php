@@ -34,13 +34,20 @@ class Signer
         }
 
         $keyData = unpack('vreserved/vsignFlag/a16hash/Vlength/a*buffer', $key);
-        $keyData['buffer'] = self::encryptKey($keyData['buffer'], $wmid, $keyPassword);
 
-        if (!self::verifyHash($keyData)) {
-            throw new \Exception('Hash check failed. Key file seems to be corrupted.');
+        $keyBuffer = self::readKeyBuffer($keyData, $wmid, $keyPassword);
+
+        if ($keyBuffer === false) {
+            // Try one more time using only the first half of the password
+            $keyPassword = substr($keyPassword, 0, ceil(strlen($keyPassword) / 2));
+            $keyBuffer = self::readKeyBuffer($keyData, $wmid, $keyPassword);
+
+            if ($keyBuffer === false) {
+                throw new \Exception('Hash check failed. Key file seems to be corrupted.');
+            }
         }
 
-        $this->initSignVariables($keyData['buffer']);
+        $this->initSignVariables($keyBuffer);
     }
 
     /**
@@ -94,6 +101,22 @@ class Signer
                     . $data['modulusLength'] . 'modulus', $keyBuffer);
         $this->power = self::reverseToDecimal($data['power']);
         $this->modulus = self::reverseToDecimal($data['modulus']);
+    }
+
+    /**
+     * Check and return the key buffer
+     *
+     * @param array $keyData
+     * @param string $wmid
+     * @param string $keyPassword
+     *
+     * @return string|false The key buffer, or false if the hash doesn't match
+     */
+    private static function readKeyBuffer($keyData, $wmid, $keyPassword)
+    {
+        $keyData['buffer'] = self::encryptKey($keyData['buffer'], $wmid, $keyPassword);
+
+        return self::verifyHash($keyData) ? $keyData['buffer'] : false;
     }
 
     /**
