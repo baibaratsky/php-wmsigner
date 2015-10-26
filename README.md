@@ -1,5 +1,7 @@
 WebMoney Signer
 ===============
+[![Build Status](https://travis-ci.org/baibaratsky/php-wmsigner.svg)](https://travis-ci.org/baibaratsky/php-wmsigner)
+[![Coverage Status](https://coveralls.io/repos/baibaratsky/php-wmsigner/badge.svg?branch=master&service=github)](https://coveralls.io/github/baibaratsky/php-wmsigner?branch=master)
 [![Packagist](https://img.shields.io/packagist/l/baibaratsky/php-wmsigner.svg)](https://github.com/baibaratsky/php-wmsigner/blob/master/LICENSE.md)
 [![Dependency Status](https://www.versioneye.com/user/projects/55316b5e10e7149066000c9a/badge.svg?style=flat)](https://www.versioneye.com/user/projects/55316b5e10e7149066000c9a)
 [![Packagist](https://img.shields.io/packagist/v/baibaratsky/php-wmsigner.svg)](https://packagist.org/packages/baibaratsky/php-wmsigner)
