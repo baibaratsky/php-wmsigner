@@ -8,6 +8,8 @@ namespace baibaratsky\WebMoney;
  */
 class Signer
 {
+    const MB_ENCODING = '8bit'; // 8bit is the fastest suitable encoding for mb_* methods
+
     private $power;
     private $modulus;
 
@@ -39,7 +41,12 @@ class Signer
 
         if ($keyBuffer === false) {
             // Try one more time using only the first half of the password
-            $keyPassword = substr($keyPassword, 0, ceil(strlen($keyPassword) / 2));
+            $keyPassword = mb_substr(
+                    $keyPassword,
+                    0,
+                    ceil(mb_strlen($keyPassword, self::MB_ENCODING) / 2),
+                    self::MB_ENCODING
+            );
             $keyBuffer = self::readKeyBuffer($keyData, $wmid, $keyPassword);
 
             if ($keyBuffer === false) {
@@ -68,7 +75,7 @@ class Signer
         }
 
         // Add the length of the base (56 = 16 + 40) as the first 2 bytes
-        $base = pack('v', strlen($base)) . $base;
+        $base = pack('v', mb_strlen($base, self::MB_ENCODING)) . $base;
 
         // Modular exponentiation
         $dec = bcpowmod(self::reverseToDecimal($base), $this->power, $this->modulus, 0);
@@ -77,15 +84,15 @@ class Signer
         $hex = self::dec2hex($dec);
 
         // Fill empty bytes with zeros
-        $hex = str_repeat('0', 132 - strlen($hex)) . $hex;
+        $hex = str_repeat('0', 132 - mb_strlen($hex, self::MB_ENCODING)) . $hex;
 
         // Reverse byte order
         $hexReversed = '';
-        for ($i = 0; $i < strlen($hex) / 4; ++$i) {
-            $hexReversed = substr($hex, $i * 4, 4) . $hexReversed;
+        for ($i = 0; $i < mb_strlen($hex, self::MB_ENCODING) / 4; ++$i) {
+            $hexReversed = mb_substr($hex, $i * 4, 4, self::MB_ENCODING) . $hexReversed;
         }
 
-        return strtolower($hexReversed);
+        return mb_strtolower($hexReversed, self::MB_ENCODING);
     }
 
     /**
@@ -146,10 +153,10 @@ class Signer
      */
     private static function xorStrings($subject, $modifier, $shift = 0)
     {
-        $modifierLength = strlen($modifier);
+        $modifierLength = mb_strlen($modifier, self::MB_ENCODING);
         $i = $shift;
         $j = 0;
-        while ($i < strlen($subject)) {
+        while ($i < mb_strlen($subject, self::MB_ENCODING)) {
             $subject[$i] = chr(ord($subject[$i]) ^ ord($modifier[$j]));
             ++$i;
             if (++$j >= $modifierLength) {
@@ -216,7 +223,7 @@ class Signer
      */
     private static function hex2decBC($hex) {
         $dec = '0';
-        $len = strlen($hex);
+        $len = mb_strlen($hex, self::MB_ENCODING);
         for ($i = 1; $i <= $len; $i++) {
             $dec = bcadd(
                 $dec,
