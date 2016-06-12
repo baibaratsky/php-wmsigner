@@ -1,7 +1,7 @@
 WebMoney Signer is free software. It is released under the terms
 of the following BSD License.
 
-Copyright © 2013-2015 by Andrei Baibaratsky. All rights reserved.
+Copyright © 2013-2016 by Andrei Baibaratsky. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions
