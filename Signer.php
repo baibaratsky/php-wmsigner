@@ -44,7 +44,7 @@ class Signer
             $keyPassword = mb_substr(
                     $keyPassword,
                     0,
-                    ceil(mb_strlen($keyPassword, self::MB_ENCODING) / 2),
+                    floor(mb_strlen($keyPassword, self::MB_ENCODING) / 2),
                     self::MB_ENCODING
             );
             $keyBuffer = self::readKeyBuffer($keyData, $wmid, $keyPassword);
