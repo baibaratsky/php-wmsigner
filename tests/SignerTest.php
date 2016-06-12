@@ -120,7 +120,10 @@ class SignerTest extends \PHPUnit_Framework_TestCase
      */
     public function testHalfPasswordCase($seededSignatureNormalPassword)
     {
-        $signer = new Signer(self::WMID, __DIR__ . self::KEY_FILE_NAME, self::KEY_PASSWORD . self::KEY_PASSWORD);
+        // A char added to check if the length of a password is odd
+        $doubleLengthPassword = self::KEY_PASSWORD . self::KEY_PASSWORD . '!';
+
+        $signer = new Signer(self::WMID, __DIR__ . self::KEY_FILE_NAME, $doubleLengthPassword);
 
         // Seed the random generator with 0 to get a predictable signature
         mt_srand(0);
