@@ -20,19 +20,23 @@ class Signer
      *
      * @throws \Exception
      */
-    public function __construct($wmid, $keyFileName, $keyPassword)
+    public function __construct($wmid, $keyFileName, $keyPassword, $keyType = 'file')
     {
         if (empty($wmid)) {
             throw new \Exception('WMID not provided.');
         }
 
-        if (!file_exists($keyFileName)) {
-            throw new \Exception('Key file not found: ' . $keyFileName);
-        }
+        if ($keyType == 'file') {
+            if (!file_exists($keyFileName)) {
+                throw new \Exception('Key file not found: ' . $keyFileName);
+            }
 
-        $key = file_get_contents($keyFileName);
-        if ($key === false) {
-            throw new \Exception('Error reading from the key file.');
+            $key = file_get_contents($keyFileName);
+            if ($key === false) {
+                throw new \Exception('Error reading from the key file.');
+            }
+        } else {
+            $key = $keyFileName;
         }
 
         $keyData = unpack('vreserved/vsignFlag/a16hash/Vlength/a*buffer', $key);
