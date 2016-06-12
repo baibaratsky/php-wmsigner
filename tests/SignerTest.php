@@ -135,6 +135,26 @@ class SignerTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     * @depends testSignBC
+     * @param string $seededSignatureFileKey Signature produced with a file key
+     */
+    public function testStringKey($seededSignatureFileKey)
+    {
+        $key = file_get_contents(__DIR__ . self::KEY_FILE_NAME);
+
+        $signer = new Signer(self::WMID, $key, self::KEY_PASSWORD);
+
+        // Seed the random generator with 0 to get a predictable signature
+        mt_srand(0);
+        $seededSignatureStringKey = $signer->sign(self::TEST_STRING);
+
+        $this->assertEquals(
+                $seededSignatureFileKey,
+                $seededSignatureStringKey
+        );
+    }
+
     public function testWmidException()
     {
         $this->setExpectedException('\Exception', 'WMID not provided.');

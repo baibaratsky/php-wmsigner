@@ -15,24 +15,26 @@ class Signer
 
     /**
      * @param string $wmid          Signer WMID
-     * @param string $keyFileName   Full path to the key file
+     * @param string $key           Full path to the key file or a string containing key
      * @param string $keyPassword   Key file password
      *
      * @throws \Exception
      */
-    public function __construct($wmid, $keyFileName, $keyPassword)
+    public function __construct($wmid, $key, $keyPassword)
     {
         if (empty($wmid)) {
             throw new \Exception('WMID not provided.');
         }
 
-        if (!file_exists($keyFileName)) {
-            throw new \Exception('Key file not found: ' . $keyFileName);
-        }
+        if (strpos($key, "\0") === false) { // It’s a file path
+            if (!is_file($key)) {
+                throw new \Exception('Key file not found: ' . $key);
+            }
 
-        $key = file_get_contents($keyFileName);
-        if ($key === false) {
-            throw new \Exception('Error reading from the key file.');
+            $key = file_get_contents($key);
+            if ($key === false) {
+                throw new \Exception('Error reading from the key file.');
+            }
         }
 
         $keyData = unpack('vreserved/vsignFlag/a16hash/Vlength/a*buffer', $key);
